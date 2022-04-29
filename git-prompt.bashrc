@@ -13,9 +13,10 @@ DEFAULT="\[\033[00;39m\]"
 function color_my_prompt {
   local __user_and_host="$LIGHT_RED\u@\h"
   local __cur_location="$BLUE\W"           # capital 'W': current directory, small 'w': full file path
-  local __prompt_tail="$DEFAULT$" 
+  local __git_branch_color="$GREEN"
+  local __prompt_tail="$VIOLET$" 
   local __user_input_color="$DEFAULT"
-  local __git_branch="$GREEN`__git_ps1`" 
+  local __git_branch=`__git_ps1`; 
  
   # colour branch name depending on state
   if [[ "${__git_branch}" =~ "*" ]]; then     # if repository is dirty
@@ -29,7 +30,7 @@ function color_my_prompt {
   fi
   
   # Build the PS1 (Prompt String)
-  PS1="$__user_and_host $__cur_location$__git_branch $__prompt_tail$__user_input_color "
+  PS1="$__user_and_host $__cur_location$__git_branch_color$__git_branch $__prompt_tail$__user_input_color "
 }
 
 # configure PROMPT_COMMAND which is executed each time before PS1
