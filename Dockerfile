@@ -1,9 +1,12 @@
 FROM ubuntu:jammy
 
+SHELL ["/bin/bash", "-c"]
+
 # Arguments
 ARG user=jaxbulsara
 ARG home=/home/${user}
 ARG timezone=America/New_York
+ARG python_version=3.10.4
 
 # Set timezone 
 ENV TZ=${timezone}
@@ -32,9 +35,13 @@ RUN useradd -rm -s /bin/bash -g root -G sudo ${user} \
 USER ${user}
 WORKDIR /home/${user}
 
+# Configure shell prompt to use WSL2 Ubuntu style
+RUN echo 'export PS1="\[\e]0;\u@\h: \w\a\]\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$"' >> ~/.bashrc
+
 # Configure git
 RUN git config --global user.email "jaxbulsara@gmail.com"
 RUN git config --global user.name "Jay Bulsara"
+RUN git config --global credential.helper store
 
 # Install pyenv
 ENV PYENV_ROOT=/home/${user}/.pyenv
@@ -51,5 +58,25 @@ RUN sed -Ei \
     -e '/^([^#]|$)/ {a export PYENV_ROOT="$HOME/.pyenv" \nexport PATH="$PYENV_ROOT/bin:$PATH"\n' \
     -e ':a' \
     -e '$!{n;ba};}' ~/.profile
-RUN echo 'eval "$(pyenv init --path)"' >>~/.profile
+RUN echo 'eval "$(pyenv init --path)"' >> ~/.profile
 RUN echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+
+# Install python
+RUN pyenv install ${python_version}
+RUN pyenv global ${python_version}
+
+# Switch to root for additional python setup
+USER root
+# Alias python to python3
+RUN echo 'ubuntu' | sudo ln -s /usr/bin/python3 /usr/bin/python
+
+# Install pip
+RUN apt install -y python3-pip python3.10-venv
+
+# Switch back to user
+USER ${user}
+
+# Install poetry
+ENV POETRY_HOME=/home/${user}/.poetry
+ENV PATH=${POETRY_HOME}/bin:$PATH
+RUN curl -sSL https://install.python-poetry.org | python -
