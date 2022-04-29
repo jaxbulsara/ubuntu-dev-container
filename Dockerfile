@@ -1,5 +1,5 @@
 # Jay's development environment
-# Version: 1.0
+# Version: 1.1
 
 FROM ubuntu:jammy
 
@@ -80,6 +80,17 @@ RUN curl -sSL https://install.python-poetry.org | python -
 RUN git config --global user.email "jaxbulsara@gmail.com"
 RUN git config --global user.name "Jay Bulsara"
 RUN git config --global credential.helper store
+RUN git config --global init.defaultBranch main
 
-# Configure shell prompt to use WSL2 Ubuntu style
-RUN echo 'export PS1="\[\e]0;\u@\h: \w\a\]\[\033[01;91m\]\u@\h\[\033[00m\]:\[\033[01;37m\]\w\[\033[00m\]$ "' >> ~/.bashrc
+# Set up git prompt
+RUN wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
+RUN mv git-prompt.sh .git-prompt.sh
+RUN source .git-prompt.sh && echo "source ~/.git-prompt.sh" >> .bashrc
+
+# Configure shell prompt
+COPY git-prompt.bashrc .
+RUN cat git-prompt.bashrc >> .bashrc && rm git-prompt.bashrc
+
+# Add useful aliases
+COPY aliases.bashrc .
+RUN cat aliases.bashrc >> .bashrc && rm aliases.bashrc
