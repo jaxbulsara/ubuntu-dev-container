@@ -1,3 +1,6 @@
+# Jay's development environment
+# Version: 1.0
+
 FROM ubuntu:jammy
 
 SHELL ["/bin/bash", "-c"]
@@ -34,14 +37,6 @@ RUN useradd -rm -s /bin/bash -g root -G sudo ${user} \
 # Set user
 USER ${user}
 WORKDIR /home/${user}
-
-# Configure shell prompt to use WSL2 Ubuntu style
-RUN echo 'export PS1="\[\e]0;\u@\h: \w\a\]\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$"' >> ~/.bashrc
-
-# Configure git
-RUN git config --global user.email "jaxbulsara@gmail.com"
-RUN git config --global user.name "Jay Bulsara"
-RUN git config --global credential.helper store
 
 # Install pyenv
 ENV PYENV_ROOT=/home/${user}/.pyenv
@@ -80,3 +75,11 @@ USER ${user}
 ENV POETRY_HOME=/home/${user}/.poetry
 ENV PATH=${POETRY_HOME}/bin:$PATH
 RUN curl -sSL https://install.python-poetry.org | python -
+
+# Configure git
+RUN git config --global user.email "jaxbulsara@gmail.com"
+RUN git config --global user.name "Jay Bulsara"
+RUN git config --global credential.helper store
+
+# Configure shell prompt to use WSL2 Ubuntu style
+RUN echo 'export PS1="\[\e]0;\u@\h: \w\a\]\[\033[01;91m\]\u@\h\[\033[00m\]:\[\033[01;37m\]\w\[\033[00m\]$ "' >> ~/.bashrc
