@@ -1,5 +1,4 @@
 # Jay's development environment
-# Version: 1.1
 
 FROM ubuntu:jammy
 
@@ -19,7 +18,7 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezo
 RUN apt update && \
     apt install -y \
     # system
-    sudo \
+    sudo iputils-ping \
     # git
     git \
     # pyenv
@@ -33,6 +32,9 @@ RUN apt update && \
 RUN useradd -rm -s /bin/bash -g root -G sudo ${user} \
     # set default password
     && echo ${user}:ubuntu | chpasswd
+
+# Set default user for WSL2
+RUN echo -e "[user]\ndefault=${user}" >> /etc/wsl.conf
 
 # Set user
 USER ${user}
@@ -60,6 +62,9 @@ RUN echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 RUN pyenv install ${python_version}
 RUN pyenv global ${python_version}
 
+# Test pyenv
+RUN pyenv --version
+
 # Switch to root for additional python setup
 USER root
 # Alias python to python3
@@ -71,10 +76,16 @@ RUN apt install -y python3-pip python3.10-venv
 # Switch back to user
 USER ${user}
 
+# Test python
+RUN python -V && python3 -V
+
 # Install poetry
 ENV POETRY_HOME=/home/${user}/.poetry
 ENV PATH=${POETRY_HOME}/bin:$PATH
 RUN curl -sSL https://install.python-poetry.org | python -
+
+# Test poetry
+RUN poetry --version
 
 # Configure git
 RUN git config --global user.email "jaxbulsara@gmail.com"
@@ -94,3 +105,6 @@ RUN cat git-prompt.bashrc >> .bashrc && rm git-prompt.bashrc
 # Add useful aliases
 COPY aliases.bashrc .
 RUN cat aliases.bashrc >> .bashrc && rm aliases.bashrc
+
+# Remove sudo instructions
+RUN touch .sudo_as_admin_successful
