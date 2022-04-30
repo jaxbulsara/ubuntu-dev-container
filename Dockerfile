@@ -99,8 +99,8 @@ RUN mv git-prompt.sh .git-prompt.sh
 RUN source .git-prompt.sh && echo "source ~/.git-prompt.sh" >> .bashrc
 
 # Configure shell prompt
-COPY git-prompt.bashrc .
-RUN cat git-prompt.bashrc >> .bashrc && rm git-prompt.bashrc
+COPY prompt.bashrc .
+RUN cat prompt.bashrc >> .bashrc && rm prompt.bashrc
 
 # Add useful aliases
 COPY aliases.bashrc .
