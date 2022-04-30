@@ -11,6 +11,7 @@ ARG user_name="Jay Bulsara"
 ARG user_email="jaxbulsara@gmail.com"
 ARG timezone=America/New_York
 ARG python_version=3.10.4
+ARG poetry_version=1.1.13
 
 # Set timezone 
 ENV TZ=${timezone}
@@ -82,6 +83,7 @@ USER ${user}
 
 # Install poetry
 ENV POETRY_HOME=/home/${user}/.poetry
+ENV POETRY_VERSION=${poetry_version}
 ENV PATH=${POETRY_HOME}/bin:$PATH
 RUN curl -sSL https://install.python-poetry.org | python -
 RUN echo 'POETRY_HOME=$HOME/.poetry' >> ~/.bashrc
