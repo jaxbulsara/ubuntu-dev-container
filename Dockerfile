@@ -6,7 +6,9 @@ SHELL ["/bin/bash", "-c"]
 
 # Arguments
 ARG user=jaxbulsara
-ARG home=/home/${user}
+ARG pass="ubuntu"
+ARG user_name="Jay Bulsara"
+ARG user_email="jaxbulsara@gmail.com"
 ARG timezone=America/New_York
 ARG python_version=3.10.4
 
@@ -31,7 +33,7 @@ RUN apt update && \
 # Create user
 RUN useradd -rm -s /bin/bash -g root -G sudo ${user} \
     # set default password
-    && echo ${user}:ubuntu | chpasswd
+    && echo ${user}:${pass} | chpasswd
 
 # Set default user for WSL2
 RUN echo -e "[user]\ndefault=${user}" >> /etc/wsl.conf
@@ -62,13 +64,10 @@ RUN echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 RUN pyenv install ${python_version}
 RUN pyenv global ${python_version}
 
-# Test pyenv
-RUN pyenv --version
-
 # Switch to root for additional python setup
 USER root
 # Alias python to python3
-RUN echo 'ubuntu' | sudo ln -s /usr/bin/python3 /usr/bin/python
+RUN echo ${pass} | sudo ln -s /usr/bin/python3 /usr/bin/python
 
 # Install pip
 RUN apt install -y python3-pip python3.10-venv
@@ -76,20 +75,16 @@ RUN apt install -y python3-pip python3.10-venv
 # Switch back to user
 USER ${user}
 
-# Test python
-RUN python -V && python3 -V
-
 # Install poetry
 ENV POETRY_HOME=/home/${user}/.poetry
 ENV PATH=${POETRY_HOME}/bin:$PATH
 RUN curl -sSL https://install.python-poetry.org | python -
-
-# Test poetry
-RUN poetry --version
+RUN echo 'POETRY_HOME=$HOME/.poetry' >> ~/.bashrc
+RUN echo 'PATH=${POETRY_HOME}/bin:$PATH' >> ~/.bashrc
 
 # Configure git
-RUN git config --global user.email "jaxbulsara@gmail.com"
-RUN git config --global user.name "Jay Bulsara"
+RUN git config --global user.email ${user_email}
+RUN git config --global user.name ${user_name}
 RUN git config --global credential.helper store
 RUN git config --global init.defaultBranch main
 
