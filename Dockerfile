@@ -20,7 +20,7 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezo
 RUN apt update && \
     apt install -y \
     # system
-    sudo iputils-ping \
+    sudo nano iputils-ping \
     # git
     git \
     # pyenv
