@@ -18,10 +18,10 @@ ENV TZ=${timezone}
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
 
 # Install environment dependencies
-RUN apt update && \
-    apt install -y \
+RUN apt-get update && \
+    apt-get install -y \
     # system
-    sudo nano iputils-ping \
+    sudo vim man iputils-ping \
     # git
     git \
     # pyenv
@@ -33,8 +33,11 @@ RUN apt update && \
     # pyodbc
     unixodbc unixodbc-dev freetds-dev freetds-bin tdsodbc
 
+# Unminimize
+RUN yes | unminimize
+
 # Setup FreeTDS
-COPY ./odbcinst.ini /etc
+COPY odbcinst.ini /etc
 
 # Create user
 RUN useradd -rm -s /bin/bash -g root -G sudo ${user} \
@@ -110,3 +113,9 @@ RUN cat aliases.bashrc >> .bashrc && rm aliases.bashrc
 
 # Remove sudo instructions
 RUN touch .sudo_as_admin_successful
+
+# Configure vim
+RUN mkdir -p .vim/colors
+COPY .vimrc .
+COPY molokai.vim .vim/colors/
+
