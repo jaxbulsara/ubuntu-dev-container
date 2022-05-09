@@ -1,7 +1,7 @@
 syntax on
 colorscheme molokai
 
-inoremap dh <ESC>
+inoremap dd <ESC>
 let mapleader="-"
 
 set number
